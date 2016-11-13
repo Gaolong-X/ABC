@@ -11,7 +11,7 @@ MYSQL_DEFAULT_PASSWORD="123456"
 groupadd mysql
 useradd -r -g mysql mysql
 
-yum -y install gcc-c++ ncurses-devel cmake
+yes | yum install gcc-c++ ncurses-devel cmake
 
 mkdir -p ${MYSQL_DATA_DIR}
 chown -R mysql:mysql ${MYSQL_DATA_DIR}
