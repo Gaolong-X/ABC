@@ -1,13 +1,12 @@
 #!/bin/bash
-#echo "Hello World"
-
 MYSQL_VERSION="5.6.32"
 MYSQL_PKG_NAME="mysql-${MYSQL_VERSION}"
-MYSQL_DOWNLOAD_URL="http://cdn.mysql.com//Downloads/MySQL-5.6/${MYSQL_PKG_NAME}.tar.gz"
+MYSQL_DOWNLOAD_URL="http://cdn.mysql.com//Downloads/MySQL-5.6/${MYSQL_PKG_NAME}.tar.gz" #替换下载链接
 DOWNLOAD_TMP_DIR="/tmp/install_mysql"
 MYSQL_INSTALL_DIR="/usr/local/${MYSQL_PKG_NAME}"
 MYSQL_DATA_DIR="/data/mysqldb"
 #MYSQL_TMP_PATH="${DOWNLOAD_TMP_DIR}/${MYSQL_PKG_NAME}.tar.gz"
+MYSQL_DEFAULT_PASSWORD="123456"
 
 groupadd mysql
 useradd -r -g mysql mysql
@@ -19,7 +18,7 @@ chown -R mysql:mysql ${MYSQL_DATA_DIR}
 
 mkdir ${DOWNLOAD_TMP_DIR}
 cd ${DOWNLOAD_TMP_DIR}
-#wget ${MYSQL_DOWNLOAD_URL}
+wget ${MYSQL_DOWNLOAD_URL}
 cp /tmp/${MYSQL_PKG_NAME}.tar.gz ${DOWNLOAD_TMP_DIR}
 
 MYSQL_TMP_DIR="${DOWNLOAD_TMP_DIR}/${MYSQL_PKG_NAME}.tar.gz"
@@ -61,15 +60,14 @@ scripts/mysql_install_db --user=mysql --datadir=${MYSQL_DATA_DIR} --innodb_undo_
 cp ${MYSQL_INSTALL_DIR}/support-files/mysql.server /etc/init.d/mysqld
 
 cp -f ${MYSQL_INSTALL_DIR}/support-files/my-default.cnf /etc/my.cnf
-
+#set environment
 echo "#MySQL environment variable"
-echo "${MYSQL_INSTALL_DIR}/bin:${MYSQL_INSTALL_DIR}/lib:\$PATH\nexport PATH" >> /etc/profile
-
+echo -e "PATH=${MYSQL_INSTALL_DIR}/bin:${MYSQL_INSTALL_DIR}/lib:\$PATH\nexport PATH" >> /etc/profile
 source /etc/profile
 
 service mysqld start
 
-mysqladmin -u root password '123456'
+mysqladmin -u root password "${MYSQL_DEFAULT_PASSWORD}"
 
 chkconfig --level 35 mysqld on
 
