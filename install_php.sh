@@ -23,12 +23,11 @@ rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
     python-setuptools
 
 #init some dir
-groupadd www && \
-    useradd -g www www && \
-    mkdir $PHP_DOWNLOAD_DIR
-
+groupadd www && useradd -g www www
+#create tmp dir
+mkdir ${PHP_DOWNLOAD_DIR}
 #Make install php
-cd $PHP_DOWNLOAD_DIR && \
+cd ${PHP_DOWNLOAD_DIR} && \
     wget http://cn2.php.net/distributions/php-${PHP_VERSION}.tar.gz && \
     tar -zxvf php-${PHP_VERSION}.tar.gz && \
     cd php-${PHP_VERSION} && \
@@ -77,9 +76,9 @@ cd $PHP_DOWNLOAD_DIR && \
     make && make install
 
 #config
-cd ${PHP_INSTALL_DIR}/etc && \
-    cp php-fpm.conf.default php-fpm.conf && \
-    cp php-fpm.d/www.conf.default php-fpm.d/default.conf
+cd ${PHP_INSTALL_DIR} &&\
+cp php-fpm.conf.default php-fpm.conf && \
+cp php-fpm.d/www.conf.default php-fpm.d/default.conf
 
 
 cd ${PHP_INSTALL_DIR}/sbin
