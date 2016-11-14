@@ -1,8 +1,7 @@
-
 #!/bin/bash
-PHP_VERSION 5.6.28
-PHP_DOWNLOAD_DIR /tmp/php
-PHP_INSTALL_DIR /usr/local/php-$PHP_VERSION
+PHP_VERSION="5.6.28"
+PHP_DOWNLOAD_DIR="/tmp/php"
+PHP_INSTALL_DIR="/usr/local/php-${PHP_VERSION}"
 
 #install php lib
 rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
@@ -30,12 +29,12 @@ groupadd www && \
 
 #Make install php
 cd $PHP_DOWNLOAD_DIR && \
-    wget http://cn2.php.net/distributions/php-$PHP_VERSION.tar.gz && \
-    tar -zxvf php-$PHP_VERSION.tar.gz && \
-    cd php-$PHP_VERSION && \
-    ./configure --prefix=$PHP_INSTALL_DIR \
-    --with-config-file-path=$PHP_INSTALL_DIR/etc \
-    --with-config-file-scan-dir=$PHP_INSTALL_DIR/etc/php.d \
+    wget http://cn2.php.net/distributions/php-${PHP_VERSION}.tar.gz && \
+    tar -zxvf php-${PHP_VERSION}.tar.gz && \
+    cd php-${PHP_VERSION} && \
+    ./configure --prefix=${PHP_INSTALL_DIR} \
+    --with-config-file-path=${PHP_INSTALL_DIR}/etc \
+    --with-config-file-scan-dir=${PHP_INSTALL_DIR}/etc/php.d \
     --with-fpm-user=www \
     --with-fpm-group=www \
     --with-mcrypt=/usr/include \
@@ -78,10 +77,10 @@ cd $PHP_DOWNLOAD_DIR && \
     make && make install
 
 #config
-cd $PHP_INSTALL_DIR/etc && \
+cd ${PHP_INSTALL_DIR}/etc && \
     cp php-fpm.conf.default php-fpm.conf && \
     cp php-fpm.d/www.conf.default php-fpm.d/default.conf
 
 
-cd $PHP_INSTALL_DIR/sbin
+cd ${PHP_INSTALL_DIR}/sbin
 ./php-fpm
