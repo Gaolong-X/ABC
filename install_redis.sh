@@ -1,12 +1,14 @@
 #!/bin/bash
 
-REDIS_VERSION="3.2.5"
-REDIS_PORT="6375"
-#REDIS_PID="/var/run/redis_${REDIS_PORT}.pid"
-REDIS_PID="/usr/local/redis/redis_${REDIS_PORT}.pid"
+REDIS_VERSION='3.2.5'
+REDIS_PORT='6378'
+REDIS_PID='/usr/local/redis/redis.pid'
+REDIS_PASSWD='123456'
+REDIS_DATA_DIR='/data/redisdb'
 DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz"
-INSTALL_TMP_DIR="/tmp/install_redis"
-INSTALL_DIR="/usr/local/redis"
+INSTALL_TMP_DIR='/tmp/install_redis'
+INSTALL_DIR='/usr/local/redis'
+
 
 if [ ! -d "${INSTALL_TMP_DIR}" ]
 then
@@ -43,9 +45,16 @@ cp  ./src/mkreleasehdr.sh \
 #set redis conf
 cp ./redis.conf ./redis.conf.default
 
+if [ ! -d "${REDIS_DATA_DIR}" ]
+then
+    mkdir -p "${REDIS_DATA_DIR}"
+fi
+
 sed -i -e "s%^pidfile /var/run/redis_6379.pid%pidfile ${REDIS_PID}%" \
 	-e "s%^port 6379%port ${REDIS_PORT}%" \
-	./redis.conf
+	-e 's%^daemonize no%daemonize yes%' \
+	-e "s%^dir ./%dir ${REDIS_DATA_DIR}%" \
+	-e "s%^# requirepass foobared%requirepass ${REDIS_PASSWD}%" ./redis.conf
 
 cp ./redis.conf "${INSTALL_DIR}"
 
@@ -64,6 +73,5 @@ sed -i -e "s%^REDISPORT=6379%REDISPORT=${REDIS_PORT}%" \
 	-e "/^REDISPORT/a\EXEC=${INSTALL_DIR}/redis-server" \
 	./redis_init_script
 
-cp ./redis_init_script /etc/init.d/redisd
-#start service
+cp ./redis_init_script /etc/init.d/redis
 
