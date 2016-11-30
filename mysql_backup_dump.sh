@@ -4,26 +4,30 @@ MYSQL_USER='root'
 MYSQL_PASSWD='123456'
 BACKUP_FILE_NAME="`date +'%Y%m%d%H%M%S'`.sql"
 BACKUP_DIR='/data/backup/mysqldb'
-BACKUP_DATABASE='b2b2c'
-BACKUP_LOG_DIR='/data/backup/log/mysqldb'
-BACKUP_LOG_NAME="backup_`date +'%Y%m%d'`.log"
-#BACKUP_LOG_FILE="${BACKUP_LOG_DIR}/${BACKUP_LOG_NAME}"
+BACKUP_DATABASE='sakila'
+LOG_DIR='/data/backup/log/mysqldb'
+LOG_NAME="backup_`date +'%Y%m%d'`.log"
+#BACKUP_LOG_FILE="${LOG_DIR}/${LOG_NAME}"
 CURRENT_PID=$$
 EMAIL='1025264711@qq.com'
 
 function log(){
-	echo "time:`date +'%Y-%m-%d %H:%M:%S'` ${CURRENT_PID} $1" >> \
-	"${BACKUP_LOG_DIR}/${BACKUP_LOG_NAME}"
+	if [ -d "${LOG_DIR}" ]
+	then
+		echo "$1" >> "${LOG_DIR}/${LOG_NAME}"
+	else
+		echo 'error, not found the log directory'
+	fi
 }
 
 function email(){
 	local msg=$2
 	local statusHTML=''
 	case $1 in
-		SUCCESS)
+		'SUCCESS')
 			statusHTML='<span class="success">SUCCESS</span>'
 		;;
-		ERROR)
+		'ERROR')
 			statusHTML='<span class="error">ERROR</span>'
 		;;
 	esac
@@ -46,7 +50,7 @@ function email(){
       	<tbody>
        	<tr><td colspan="2" class="title">${title}</td></tr>
        	<tr>
-        	<td class="key"><span>状态</span></td> 
+        	<td class="key"><span>运行结果</span></td> 
         	<td class="val">${statusHTML}</td>
        	</tr>
 		<tr>
@@ -61,45 +65,56 @@ function email(){
 EOF
 }
 
+function mark(){
+	local flag=$1
+	local msg=$2
+	local msgtxt="time:`date +'%Y-%m-%d %H:%M:%S'` ${CURRENT_PID} [$flag] $2"
+	
+	logmsg="${msgtxt}"
+	mailmsg="${msgtxt}<br/>"
+
+	if [ "${flag}"=='SUCCESS' ] || [ "${flag}"=='ERROR' ]
+	then
+		log "${logmsg}"
+		email "${flag}" "${mailmsg}"
+	elif [ "${flag}"=='WARNING' ]
+	then
+		log "${logmsg}"
+	fi
+}
+
 #init
-if [ ! -d "${BACKUP_LOG_DIR}" ]
+if [ ! -d "${LOG_DIR}" ]
 then
-	mkdir -p "${BACKUP_LOG_DIR}"
+	mkdir -p "${LOG_DIR}"
 	if [ ! $? -eq 0 ]
 	then
-		email 'ERROR' 'Error, Create log directory'
+		mark 'ERROR' 'Create log directory fail.'
 		exit 1
 	fi
 fi
 
-logmsg='[NOTE] Start working'
-emailmsg="${logmsg}"
-log ${logmsg}
+mark 'NOTE' 'Create log directory fail.'
 
 if [ ! -d "${BACKUP_DIR}" ]
 then
 	mkdir -p "${BACKUP_DIR}"
 	if [ ! $? -eq 0 ]
  	then
-		logmsg='[ERROR] Create backup directory'
-		emailmsg="${emailmsg}<br/>${logmsg}"
- 		log ${logmsg}
-		email 'ERROR' ${emailmsg}
+		mark 'ERROR' 'Create backup directory'
  		exit 1;
  	fi
 fi
 
-logmsg='[NOTE] Start backup...'
-emailmsg="${emailmsg}<br/>${logmsg}"
-log ${logmsg}
+mark 'NOTE' 'Start backup...'
 
-result=`mysqldump -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -R "${BACKUP_DATABASE}" > "${BACKUP_DIR}/${BACKUP_FILE_NAME}"`
+mysqldump -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -R "${BACKUP_DATABASE}" > "${BACKUP_DIR}/${BACKUP_FILE_NAME}"
 
 if [ $? -eq 0 ]
-then	
-	log '[SUCCESS] Backup completed'
+then
+	mark 'SUCCESS' 'Backup completed.'
 else
-	log '[ERROR] Backup fail, command execution failed!'
+	mark 'ERROR' 'Backup fail,mysqldump execute error.'
 fi
 
 exit $?
