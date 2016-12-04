@@ -83,13 +83,6 @@ function mark(){
 	else
 		logmsg="${msgtxt}"
 	fi
-	#set mail
-	if test "${mailmsg}"
-	then
-		mailmsg="${mailmsg}<br/>${msgtxt}"
-	else
-		mailmsg="${msgtxt}"
-	fi
 
 	if [ "${flag}" == 'SUCCESS' ] || [ "${flag}" == 'ERROR' ]
 	then
@@ -98,8 +91,9 @@ function mark(){
 		local timediff=`expr ${curtime} - ${STARTTIME}`				
 		local exetime=$(printf "%.5f" `echo "scale=5;${timediff} / 1000000000" | bc`)
 		#写入日志
-		log "${logmsg} Exec:${exetime}"
-		email "${flag}" "${mailmsg} Exec:${exetime}" ${exetime}
+		logmsg="${logmsg} Exec:${exetime}"
+		log "${logmsg}"
+		email "${flag}" "${logmsg//\\n/<br/>}" "${exetime}"
 	#elif [ "${flag}" == 'WARNING' ]
 	#then
 	else
