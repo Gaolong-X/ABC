@@ -10,11 +10,12 @@ LOG_NAME="backup_`date +'%Y%m%d'`.log"
 #BACKUP_LOG_FILE="${LOG_DIR}/${LOG_NAME}"
 CURRENT_PID=$$
 EMAIL='1025264711@qq.com'
+STARTTIME=$(date +%s%N)
 
 function log(){
 	if [ -d "${LOG_DIR}" ]
 	then
-		echo "$1" >> "${LOG_DIR}/${LOG_NAME}"
+		echo -e "$1" >> "${LOG_DIR}/${LOG_NAME}"
 	else
 		echo 'error, not found the log directory'
 	fi
@@ -23,6 +24,7 @@ function log(){
 function email(){
 	local msg=$2
 	local statusHTML=''
+	local exetime=$3
 	case $1 in
 		'SUCCESS')
 			statusHTML='<span class="success">SUCCESS</span>'
@@ -50,11 +52,15 @@ function email(){
       	<tbody>
        	<tr><td colspan="2" class="title">${title}</td></tr>
        	<tr>
-        	<td class="key"><span>运行结果</span></td> 
+        	<td class="key">运行结果</td> 
         	<td class="val">${statusHTML}</td>
        	</tr>
 		<tr>
-			<td class="key"><span>日志内容</span></td> 
+			<td class="key">运行时长</td>
+			<td class="val">${exetime} sec</td>
+		</tr>
+		<tr>
+			<td class="key">日志内容</td> 
 			<td class="val">${msg}</td>
         </tr>
       	</tbody>
@@ -70,15 +76,33 @@ function mark(){
 	local msg=$2
 	local msgtxt="time:`date +'%Y-%m-%d %H:%M:%S'` ${CURRENT_PID} [$flag] $2"
 	
-	logmsg="${msgtxt}"
-	mailmsg="${msgtxt}<br/>"
+	#set log
+	if test "${logmsg}"
+	then
+		logmsg="${logmsg}\n${msgtxt}"
+	else
+		logmsg="${msgtxt}"
+	fi
+	#set mail
+	if test "${mailmsg}"
+	then
+		mailmsg="${mailmsg}<br/>${msgtxt}"
+	else
+		mailmsg="${msgtxt}"
+	fi
 
-	if [ "${flag}"=='SUCCESS' ] || [ "${flag}"=='ERROR' ]
+	if [ "${flag}" == 'SUCCESS' ] || [ "${flag}" == 'ERROR' ]
 	then
-		log "${logmsg}"
-		email "${flag}" "${mailmsg}"
-	elif [ "${flag}"=='WARNING' ]
-	then
+		#计算运行时长
+		local curtime=$(date +%s%N)
+		local timediff=`expr ${curtime} - ${STARTTIME}`				
+		local exetime=$(printf "%.5f" `echo "scale=5;${timediff} / 1000000000" | bc`)
+		#写入日志
+		log "${logmsg} Exec:${exetime}"
+		email "${flag}" "${mailmsg} Exec:${exetime}" ${exetime}
+	#elif [ "${flag}" == 'WARNING' ]
+	#then
+	else
 		log "${logmsg}"
 	fi
 }
@@ -94,19 +118,19 @@ then
 	fi
 fi
 
-mark 'NOTE' 'Create log directory fail.'
+mark 'NOTE' 'Start Run....'
 
 if [ ! -d "${BACKUP_DIR}" ]
 then
 	mkdir -p "${BACKUP_DIR}"
 	if [ ! $? -eq 0 ]
  	then
-		mark 'ERROR' 'Create backup directory'
+		mark 'ERROR' 'Create backup directory.'
  		exit 1;
  	fi
 fi
 
-mark 'NOTE' 'Start backup...'
+mark 'NOTE' 'backup...'
 
 mysqldump -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -R "${BACKUP_DATABASE}" > "${BACKUP_DIR}/${BACKUP_FILE_NAME}"
 
