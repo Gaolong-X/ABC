@@ -2,13 +2,11 @@
 
 MYSQL_USER='root'
 MYSQL_PASSWD='123456'
+MYSQL_DATABASE='sakila'
 BACKUP_FILE_NAME="`date +'%Y%m%d%H%M%S'`.sql"
 BACKUP_DIR='/data/backup/mysqldb'
-BACKUP_DATABASE='sakila'
 LOG_DIR='/data/backup/log/mysqldb'
 LOG_NAME="backup_`date +'%Y%m%d'`.log"
-#BACKUP_LOG_FILE="${LOG_DIR}/${LOG_NAME}"
-CURRENT_PID=$$
 EMAIL='1025264711@qq.com'
 STARTTIME=$(date +%s%N)
 
@@ -47,7 +45,7 @@ function email(){
     	.error{color: red}
  		</style>
  	<body>
-    	<div id="mailContentContainer"> 
+    	<div> 
      	<table cellpadding="0" cellspacing="0" border="0">
       	<tbody>
        	<tr><td colspan="2" class="title">${title}</td></tr>
@@ -74,7 +72,7 @@ EOF
 function mark(){
 	local flag=$1
 	local msg=$2
-	local msgtxt="time:`date +'%Y-%m-%d %H:%M:%S'` ${CURRENT_PID} [$flag] $2"
+	local msgtxt="time:`date +'%Y-%m-%d %H:%M:%S'` $$ [$flag] $2"
 	
 	#set log
 	if test "${logmsg}"
@@ -96,8 +94,8 @@ function mark(){
 		email "${flag}" "${logmsg//\\n/<br/>}" "${exetime}"
 	#elif [ "${flag}" == 'WARNING' ]
 	#then
-	else
-		log "${logmsg}"
+	#else
+	#	log "${logmsg}"
 	fi
 }
 
@@ -126,7 +124,7 @@ fi
 
 mark 'NOTE' 'backup...'
 
-mysqldump -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -R "${BACKUP_DATABASE}" > "${BACKUP_DIR}/${BACKUP_FILE_NAME}"
+mysqldump -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -R "${MYSQL_DATABASE}" > "${BACKUP_DIR}/${BACKUP_FILE_NAME}"
 
 if [ $? -eq 0 ]
 then
