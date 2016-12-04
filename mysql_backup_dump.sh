@@ -72,30 +72,34 @@ EOF
 function mark(){
 	local flag=$1
 	local msg=$2
-	local msgtxt="time:`date +'%Y-%m-%d %H:%M:%S'` $$ [$flag] $2"
+	local logmsg="time:`date +'%Y-%m-%d %H:%M:%S'` $$ [$flag] $2"
 	
 	#set log
-	if test "${logmsg}"
+	if test "${EMAIL}"
 	then
-		logmsg="${logmsg}\n${msgtxt}"
-	else
-		logmsg="${msgtxt}"
+		if test "${emailmsg}"
+		then
+			emailmsg="${emailmsg}<br/>${logmsg}"
+		else
+			emailmsg="${logmsg}"
+		fi
 	fi
 
 	if [ "${flag}" == 'SUCCESS' ] || [ "${flag}" == 'ERROR' ]
 	then
 		#计算运行时长
 		local curtime=$(date +%s%N)
-		local timediff=`expr ${curtime} - ${STARTTIME}`				
-		local exetime=$(printf "%.5f" `echo "scale=5;${timediff} / 1000000000" | bc`)
+		#local timediff=`expr ${curtime} - ${STARTTIME}`				
+		local exetime=$(printf "%.5f" `echo "scale=5;(${curtime}-${STARTTIME})/1000000000" | bc`)
 		#写入日志
-		logmsg="${logmsg} Exec:${exetime}"
+		#logmsg="${logmsg} Exec:${exetime}"
+		log "${logmsg} Exec:${exetime}"
+		if test "${EMAIL}"
+		then
+			email "${flag}" "${emailmsg} Exec:${exetime}" "${exetime}"
+		fi
+	else
 		log "${logmsg}"
-		email "${flag}" "${logmsg//\\n/<br/>}" "${exetime}"
-	#elif [ "${flag}" == 'WARNING' ]
-	#then
-	#else
-	#	log "${logmsg}"
 	fi
 }
 
@@ -110,7 +114,7 @@ then
 	fi
 fi
 
-mark 'NOTE' 'Start Run....'
+mark 'NOTE' 'Start Run.'
 
 if [ ! -d "${BACKUP_DIR}" ]
 then
