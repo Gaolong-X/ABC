@@ -75,6 +75,15 @@ cd ${PHP_DOWNLOAD_DIR} && \
     --without-pear && \
     make && make install
 
+#set php-fpm
+cp sapi/fpm/init.d.php-fpm.in /etc/init.d/php-fpm
+sed -i -e "s%^@prefix@%${PHP_INSTALL_DIR}%" \
+    -e 's%^@exec_prefix@%${prefix}%' \
+	-e 's%^@sbindir@%${prefix}/sbin%' \
+	-e 's%^@sysconfdir@%${prefix}/etc%' \
+	-e 's%^@localstatedir@%${prefix}/var%' /etc/init.d/php-fpm
+chomd 755 /etc/init.d/php-fpm
+
 #config
 cd ${PHP_INSTALL_DIR} &&\
 cp php-fpm.conf.default php-fpm.conf && \
