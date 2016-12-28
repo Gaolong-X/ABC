@@ -45,7 +45,7 @@ cd php-${PHP_VERSION}
 
 ./configure --prefix=${PHP_INSTALL_DIR} \
 	--with-config-file-path=${PHP_INSTALL_DIR}/etc \
-	#--with-config-file-scan-dir=${PHP_INSTALL_DIR}/etc/php.d \
+	--with-config-file-scan-dir=${PHP_INSTALL_DIR}/etc/php.d \
 	--with-fpm-user=www \
 	--with-fpm-group=www \
 	--with-mcrypt=/usr/include \
@@ -102,5 +102,6 @@ cd ${PHP_INSTALL_DIR}/etc/
 cp php-fpm.conf.default php-fpm.conf
 cp php.ini-development php.ini
 
-cd ${PHP_INSTALL_DIR}/sbin
-./php-fpm
+#cd ${PHP_INSTALL_DIR}/sbin
+service php-fpm start
+
