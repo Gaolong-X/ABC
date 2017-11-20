@@ -95,10 +95,9 @@ sed -i -e "s%^@prefix@%${PHP_INSTALL_DIR}%" \
 chomd 755 /etc/init.d/php-fpm
 
 #config
-cd ${PHP_INSTALL_DIR} &&\
-cp php-fpm.conf.default php-fpm.conf && \
-cp php-fpm.d/www.conf.default php-fpm.d/default.conf
+cp php.ini-development php.ini-production ${PHP_INSTALL_DIR}/etc
+cd ${PHP_INSTALL_DIR} && \
+cp etc/php.ini-production etc/php.ini && \
+cp etc/php-fpm.conf.default etc/php-fpm.conf && \
+cp etc/php-fpm.d/www.conf.default etc/php-fpm.d/default.conf
 
-
-cd ${PHP_INSTALL_DIR}/sbin
-./php-fpm
