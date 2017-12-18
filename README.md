@@ -8,9 +8,9 @@
 
 [PHP编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_php.sh)
 
-[MySQL安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_mysql.sh)
+[MySQL编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_mysql.sh)
 
-[Percona MySQL安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_mysql_percona.sh)
+[Percona MySQL编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_mysql_percona.sh)
 
 [MySQL备份之mysqldump](https://github.com/Gaoloog/ABC/blob/master/mysql_backup_dump.sh)
 
@@ -18,7 +18,7 @@
 
 [MySQL恢复之innobackupex](https://github.com/Gaoloog/ABC/blob/master/mysql_restore_innobackupex.sh)
 
-[Redis安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_redis.sh)
+[Redis编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_redis.sh)
 
 [防火墙iptable常规配置](https://github.com/Gaoloog/ABC/blob/master/iptables.sh)
 
