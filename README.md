@@ -24,4 +24,6 @@
 
 [防火墙iptable常规配置](https://github.com/Gaoloog/ABC/blob/master/iptables.sh)
 
+[Keepalived脚本之Nginx监控](https://github.com/Gaoloog/ABC/blob/master/keepalived_chk_nginx.sh)
+
 
