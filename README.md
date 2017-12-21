@@ -6,6 +6,8 @@
 
 [Nginx日志分割](https://github.com/Gaoloog/ABC/blob/master/nginx_log_backup.sh)
 
+[Nginx自动重启](https://github.com/Gaoloog/ABC/blob/master/nginx_auto_restart.sh)
+
 [PHP编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_php.sh)
 
 [MySQL编译安装脚本](https://github.com/Gaoloog/ABC/blob/master/install_mysql.sh)
