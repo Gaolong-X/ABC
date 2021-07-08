@@ -15,7 +15,7 @@ yum -y install pcre-devel \
 	openssl-devel
 
 #init some dir
-groupadd www && useradd -g www www
+#groupadd www && useradd -g www www
 
 if [ ! -d ${NGINX_DOWNLOAD_DIR} ]
 then
@@ -34,11 +34,12 @@ cd nginx-${NGINX_VERSION}
 
 #install nginx
 ./configure --prefix=${NGINX_INSTALL_DIR} \
+    #--with-debug \
     --with-pcre \
     --with-http_ssl_module \
-    --without-mail_pop3_module \
-    --without-mail_imap_module \
-    --with-http_gzip_static_module && \
+    --with-http_realip_module \
+    #--with-http_gzip_static_module \
+    --with-http_stub_status_module \
     make -j && make install
 #clean
 

@@ -33,7 +33,7 @@ fi
  tar -zxvf php-${PHP_VERSION}.tar.gz
 
 # cp /usr/local/lib/libzip/include/zipconf.h /usr/local/include/zipconf.h
-
+# since php7.4, `--enable-gd` replace `--with-gd`, `--with-zip` replace `--enable-zip`
 cd php-${PHP_VERSION} && \
     ./configure --prefix=${PHP_INSTALL_DIR} \
     --with-config-file-path=${PHP_INSTALL_DIR}/etc \
@@ -44,12 +44,15 @@ cd php-${PHP_VERSION} && \
     #--with-mysqli \
     --with-pdo-mysql \
     --with-pdo-sqlite \
+    # --with-pdo-pgsql
+    # --with-pgsql
     --with-openssl \
     --with-gd \
-    --with-iconv \
     --with-zlib \
+    −−with-bz2
     --with-gettext \
     --with-curl \
+    --with-webp-dir \
     --with-png-dir \
     --with-jpeg-dir \
     --with-freetype-dir \
@@ -58,30 +61,24 @@ cd php-${PHP_VERSION} && \
     --enable-fpm \
     --enable-xml \
     --enable-shmop \
-    --enable-sysvsem \
+    # --enable-sysvsem \
     --enable-inline-optimization \
     --enable-mbregex \
     --enable-mbstring \
     --enable-ftp \
-    --enable-ctype \
     #--enable-gd-native-ttf \
     --enable-mysqlnd \
     --enable-pcntl \
     --enable-sockets \
     --enable-zip \
-    --enable-soap \
-    --enable-session \
+    # --enable-soap \
     --enable-opcache \
     --enable-bcmath \
     --enable-exif \
-    --enable-fileinfo \
     --disable-rpath \
     --enable-ipv6 \
     --disable-debug \
-    --without-pear && \
     make -j && make install
-
-
 
 #config
 cp php.ini-development php.ini-production ${PHP_INSTALL_DIR}/etc
